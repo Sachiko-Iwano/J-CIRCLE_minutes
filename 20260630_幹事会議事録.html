@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-06-30 幹事会議事録</title>
+  <style>
+    :root {
+      --bg: #f6f1e7;
+      --panel: #fffdf8;
+      --line: #d9cfbe;
+      --text: #2b241d;
+      --muted: #746a5d;
+      --accent: #86633b;
+      --accent-soft: #efe2cf;
+      --shadow: 0 18px 48px rgba(65, 48, 28, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(180, 146, 88, 0.14), transparent 28%),
+        linear-gradient(180deg, #f7f3eb 0%, #f3ecdf 100%);
+    }
+    .layout {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 292px minmax(0, 1fr);
+    }
+    .sidebar {
+      border-right: 1px solid var(--line);
+      background: rgba(255, 252, 245, 0.88);
+      backdrop-filter: blur(14px);
+      padding: 28px 18px 24px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .sidebar h1 {
+      margin: 0 0 18px;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+    .date-group {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .date-toggle {
+      appearance: none;
+      width: 100%;
+      border: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      text-align: left;
+      cursor: pointer;
+      background: linear-gradient(180deg, #fbf6ed 0%, #f8f0e2 100%);
+    }
+    .date-toggle:hover {
+      background: linear-gradient(180deg, #f8f1e4 0%, #f3e8d5 100%);
+    }
+    .date-toggle::after {
+      content: "▾";
+      font-size: 13px;
+      color: #9a7b56;
+      transition: transform 180ms ease;
+    }
+    .date-group.is-collapsed .date-toggle::after {
+      transform: rotate(-90deg);
+    }
+    .nav-list {
+      display: grid;
+      gap: 4px;
+      padding: 10px;
+      border-top: 1px solid var(--line);
+    }
+    .date-group.is-collapsed .nav-list {
+      display: none;
+    }
+    .nav-link {
+      appearance: none;
+      border: 0;
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      color: var(--text);
+      padding: 10px 12px 10px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1.4;
+      transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+    }
+    .nav-link:hover {
+      background: #f4ecdf;
+      transform: translateX(2px);
+    }
+    .nav-link.is-active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .toolbar {
+      position: relative;
+    }
+    .print-toggle {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255, 252, 245, 0.96);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .print-toggle:hover {
+      background: #fff9f0;
+    }
+    .print-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      min-width: 220px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 8px;
+      display: none;
+    }
+    .print-menu.is-open {
+      display: grid;
+      gap: 4px;
+    }
+    .print-option {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      text-align: left;
+      color: var(--text);
+      font-size: 14px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .print-option:hover {
+      background: #f4ecdf;
+    }
+    .content {
+      padding: 28px;
+    }
+    .panel {
+      display: none;
+      max-width: 980px;
+      background: rgba(255, 253, 248, 0.96);
+      border: 1px solid rgba(217, 207, 190, 0.88);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 30px 34px 36px;
+    }
+    .panel.is-active {
+      display: block;
+    }
+    .panel-header {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .panel-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .panel-date {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0;
+    }
+    .panel h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.35;
+    }
+    .panel h3 {
+      margin: 26px 0 10px;
+      font-size: 18px;
+      line-height: 1.45;
+    }
+    .panel p {
+      margin: 0 0 12px;
+      line-height: 1.8;
+    }
+    .minutes-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 16px;
+      display: grid;
+      gap: 10px;
+    }
+    .minutes-list li {
+      line-height: 1.8;
+      position: relative;
+    }
+    .bullet-item {
+      padding-left: 1.1em;
+    }
+    .bullet-item::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .note-item {
+      margin-left: 1.1em;
+      padding-left: 1.2em;
+      color: #3c362f;
+    }
+    .note-item::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--muted);
+    }
+    .sub-item {
+      margin-left: 1.5em;
+      padding-left: 1em;
+      color: #3c362f;
+    }
+    .sub-item::before {
+      content: "−";
+      position: absolute;
+      left: 0;
+      color: var(--muted);
+    }
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .content {
+        padding: 18px;
+      }
+      .panel {
+        padding: 22px 18px 28px;
+        border-radius: 20px;
+      }
+      .panel-top {
+        align-items: flex-start;
+      }
+      .panel h2 {
+        font-size: 22px;
+      }
+    }
+    @media print {
+      body {
+        background: #fff;
+      }
+      body.print-page .panel,
+      body.print-date .panel,
+      body.print-label .panel {
+        display: none !important;
+      }
+      body.print-page .panel.print-target,
+      body.print-date .panel.print-target,
+      body.print-label .panel.print-target {
+        display: block !important;
+      }
+      .layout {
+        display: block;
+        min-height: auto;
+      }
+      .sidebar {
+        display: none;
+      }
+      .toolbar {
+        display: none;
+      }
+      .content {
+        padding: 0;
+      }
+      .panel {
+        display: block !important;
+        max-width: none;
+        border: 0;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 0;
+        background: #fff;
+        break-after: page;
+        page-break-after: always;
+      }
+      .panel:last-child {
+        break-after: auto;
+        page-break-after: auto;
+      }
+      .panel[hidden] {
+        display: block !important;
+      }
+      .panel-header {
+        margin-bottom: 14px;
+      }
+      .panel h2 {
+        font-size: 20pt;
+      }
+      .panel h3 {
+        font-size: 13pt;
+        margin-top: 18px;
+      }
+      .minutes-list li,
+      .panel p {
+        line-height: 1.6;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h1>J-CIRCLE 議事録</h1>
+      <div class="date-group" data-date-group>
+        <button class="date-toggle" data-date-toggle type="button" aria-expanded="true">2026-06-30</button>
+        <div class="nav-list">
+          <button class="nav-link is-active" data-target="2026-06-30-会員管理班">会員管理班</button><button class="nav-link" data-target="2026-06-30-webinar班">Webinar班</button><button class="nav-link" data-target="2026-06-30-研究サポートプロジェクト班">研究サポートプロジェクト班</button><button class="nav-link" data-target="2026-06-30-ハンズオン班">ハンズオン班</button><button class="nav-link" data-target="2026-06-30-国際交流プロジェクト班">国際交流プロジェクト班</button><button class="nav-link" data-target="2026-06-30-広報班">広報班</button><button class="nav-link" data-target="2026-06-30-その他">その他</button>
+        </div>
+      </div>
+    </aside>
+    <main class="content" data-default-target="2026-06-30-会員管理班">
+      <section id="2026-06-30-会員管理班" class="panel is-active" data-date="2026-06-30" data-label="会員管理班"><header class="panel-header"><div class="panel-top"><div class="panel-date">2026-06-30</div><div class="toolbar"><button class="print-toggle" type="button" aria-expanded="false">印刷 / PDF</button><div class="print-menu"><button class="print-option" type="button" data-print-scope="date">この日付の全てのページ</button><button class="print-option" type="button" data-print-scope="page">このページのみ</button><button class="print-option" type="button" data-print-scope="label">全ての日付のこの班のみ</button></div></div></div><h2><strong>会員管理班（</strong><strong>班長；</strong><strong>丸山翔先生</strong><strong>、北日本幹事</strong><strong>）</strong></h2></header><h3>1. 前回以降の活動報告</h3>
+<ul class="minutes-list"><li class="bullet-item">退会要件該当会員へ退会メールを送付し、Googleグループから削除済み。</li><li class="bullet-item">新規会員登録は問題なく運用中。</li></ul>
+<h3>2. 課題</h3>
+<ul class="minutes-list"><li class="bullet-item">Googleフォーム入力内容がExcelファイルへ自動反映される仕組みの詳細は未把握。</li><li class="note-item">元々三谷先生が作成されたフォーム。デフォルトの機能ではないかとのこと。</li></ul>
+<p>（フォーム編集の回答欄においてにスプレッドシートに表記の機能があるので、スプレッドシート経由でExcelに反映可能。…岩野調べ）</p>
+<h3>3. 現時点での年間予定、現在進行中のプロジェクトの進捗状況</h3>
+<ul class="minutes-list"><li class="bullet-item">特になし。</li></ul>
+<h3>4. その他</h3>
+<ul class="minutes-list"><li class="bullet-item">記載なし。</li></ul>
+<h3>5. 他、幹事会での決定事項、新たな課題等</h3>
+<ul class="minutes-list"><li class="bullet-item">以後、<strong><u>Antaa</u></strong><strong><u>の</u></strong><strong><u>会員</u></strong><strong><u>承認作業を</u></strong><strong><u>会員管理班の仕事に含める</u></strong>。現状、土屋先生がしてくださっているため、<strong><u>土屋先生を会員管理班の所属</u></strong>とする。</li></ul></section><section id="2026-06-30-webinar班" class="panel" data-date="2026-06-30" data-label="Webinar班" hidden><header class="panel-header"><div class="panel-top"><div class="panel-date">2026-06-30</div><div class="toolbar"><button class="print-toggle" type="button" aria-expanded="false">印刷 / PDF</button><div class="print-menu"><button class="print-option" type="button" data-print-scope="date">この日付の全てのページ</button><button class="print-option" type="button" data-print-scope="page">このページのみ</button><button class="print-option" type="button" data-print-scope="label">全ての日付のこの班のみ</button></div></div></div><h2><strong><br></strong><strong>W</strong><strong>ebinar</strong><strong>班（中山敬太先生、中部幹事）</strong></h2></header><h3>1. 前回以降の活動報告</h3>
+<ul class="minutes-list"><li class="bullet-item">3/19 webinar、4/24 症例検討会、6/19 webinar を開催。</li><li class="bullet-item">6/22 webinar班会議を実施し、本年度の開催予定と内容を決定。</li></ul>
+<h3>2. 課題</h3>
+<ul class="minutes-list"><li class="bullet-item">IVR事務局より、IVR准会員へのメルマガ告知可否について問い合わせあり。</li><li class="note-item">元々準会員とメールが分かれている認識もなかったため、症例検討会を除く通常webinarは准会員にも案内可と考える。<strong><u>IVR</u></strong><strong><u>学会理事会での</u></strong><strong><u>承認を得ておく</u></strong>。</li><li class="bullet-item">講演スライドはこれまでAntaaで共有。前任田中先生の交代後、新規Antaa投稿係は？</li><li class="note-item">業務のフロー上、一旦webinar班（<strong><u>暫定</u></strong><strong><u>中山先生</u></strong>）で。次点候補は齊藤英正先生。</li><li class="bullet-item">症例検討会・webinarの講演者、モデレーター、発表者の選出には幹事・世話人・グループメンバーの協力あり。構成メンバーは充足。</li><li class="bullet-item">外部講師招聘時は、引き続き予算申請が必要。現時点では未定。</li></ul>
+<h3>3. 現時点での年間予定、現在進行中のプロジェクトの進捗状況</h3>
+<ul class="minutes-list"><li class="bullet-item">症例検討会は6月、7月、9月、10月、11月、1月、2月、3月、4月の年9回開催予定。</li><li class="bullet-item">グループミーティングは6月、9月、12月、3月に開催予定。</li><li class="bullet-item">9月webinarは9/18、10月webinarは10/16、11月症例検討会は11/20予定。</li></ul>
+<h3>4. その他</h3>
+<ul class="minutes-list"><li class="bullet-item">前任の伊原先生がメンバーに残っており心強い。</li><li class="bullet-item">申し送り資料も分かりやすく、不明点もすぐ確認可能。</li></ul>
+<h3>5. 他、幹事会での決定事項、新たな課題等</h3>
+<ul class="minutes-list"><li class="bullet-item">特になし。</li></ul></section><section id="2026-06-30-研究サポートプロジェクト班" class="panel" data-date="2026-06-30" data-label="研究サポートプロジェクト班" hidden><header class="panel-header"><div class="panel-top"><div class="panel-date">2026-06-30</div><div class="toolbar"><button class="print-toggle" type="button" aria-expanded="false">印刷 / PDF</button><div class="print-menu"><button class="print-option" type="button" data-print-scope="date">この日付の全てのページ</button><button class="print-option" type="button" data-print-scope="page">このページのみ</button><button class="print-option" type="button" data-print-scope="label">全ての日付のこの班のみ</button></div></div></div><h2><strong><br></strong><strong>研究サポートプロジェクト班（友金佐光先生、関東幹事）</strong></h2></header><h3>1. 前回以降の活動報告</h3>
+<ul class="minutes-list"><li class="bullet-item">J-CIRCLE+JIVROSG共催論文ワークショップを2026/11/14午後に開催予定。会場は国立がん研究センター中央特別会議室。</li><li class="bullet-item">今年度は未開催であるが、昨年度までは抄読会も定期開催。</li></ul>
+<h3>2. 課題</h3>
+<ul class="minutes-list"><li class="bullet-item">過去3回は前向き臨床研究ワークショップを実施し、臨床研究と研究計画書作成を主軸としてきた。一方で年々参加者が減少。「臨床研究ニーズの低下」「若手にはハードルが高い」ことなどが理由と考えられ、今年は論文作成ワークショップへ切替。</li><li class="bullet-item">今後の方向性が臨床研究、論文作成、その他のいずれになるかは、今年度の論文ワークショップ次第。</li></ul>
+<h3>3. 現時点での年間予定、現在進行中のプロジェクトの進捗状況</h3>
+<ul class="minutes-list"><li class="bullet-item">JIVROSGと研究班との合同会議を7月中に実施予定。</li><li class="sub-item">論文ワークショップでは、快諾いただいた実際の初稿論文を使用予定。受講生には事前学習動画を見てもらい、初稿論文のabstractを作成してもらう。</li><li class="sub-item">グループワークでは論文を校正し、その間に投稿の流れ、投稿先の決め方などの講義を実施予定。AI使用に関するアンケート調査を行うかも検討中。</li><li class="sub-item">開催形式はハイブリッド開催を検討中。WEB参加は講義のみ（2000−3000円予定）、現地参加は講義＋グループワーク（6000円予定）の方針。</li></ul>
+<h3>4. その他</h3>
+<ul class="minutes-list"><li class="bullet-item">愛知がんセンターの長谷川先生より、科研費などの研究費申請にあたり「J-CIRCLEと共同研究できないか」との相談あり。</li><li class="bullet-item"><strong><u>良いネタ、研究案があれば提案いただきたい。本件窓口は吉原</u></strong><strong><u>先生、</u></strong><strong><u>友金先生</u></strong>。</li><li class="note-item">活動資金や実績を残す意味でも何らかの研究ができると良い。</li><li class="sub-item">素案として、後ろ向きアンケート調査はやり易いかも。また、他施設で症例集めて後ろ向きとか。</li><li class="sub-item">自施設だけでするよりはやり易いものもあるだろうから、興味のある人や題材をとっかかりとして全体の活動にすることもできるか？</li><li class="sub-item">ひとまず中山先生が長谷川先生と詳しく話してみてくださるとのこと。</li></ul>
+<h3>5. 他、幹事会での決定事項、新たな課題等</h3>
+<ul class="minutes-list"><li class="bullet-item">特になし。</li></ul></section><section id="2026-06-30-ハンズオン班" class="panel" data-date="2026-06-30" data-label="ハンズオン班" hidden><header class="panel-header"><div class="panel-top"><div class="panel-date">2026-06-30</div><div class="toolbar"><button class="print-toggle" type="button" aria-expanded="false">印刷 / PDF</button><div class="print-menu"><button class="print-option" type="button" data-print-scope="date">この日付の全てのページ</button><button class="print-option" type="button" data-print-scope="page">このページのみ</button><button class="print-option" type="button" data-print-scope="label">全ての日付のこの班のみ</button></div></div></div><h2><strong><br></strong><strong>ハンズオン班（前回担当木野田先生）</strong></h2></header><h3>1. 前回以降の活動報告</h3>
+<ul class="minutes-list"><li class="bullet-item">JSIR総会でハンズオンを実施（原先生、木野田先生ほか）。</li><li class="bullet-item">JCRミッドサマーハンズオンを準備中（松本先生ほか）。</li><li class="bullet-item">JCRセミナーのハンズオンは、ミッドサマーを最後に継続しない方針。</li><li class="bullet-item">SIRAP共催の研修医セミナーは学術委員会主導で進行。こちらは人員を出す形で参加。</li></ul>
+<h3>2. 課題</h3>
+<ul class="minutes-list"><li class="bullet-item">各開催では幹事の協力あり。ただし、ハンズオン全体のチャンネルに新幹事が未参加。現在は中山先生のみ参加。中山先生はwebinarのメイン担当。</li><li class="bullet-item">開催ごとに個別チャンネルを作成していたため、統一的なチャンネル運用になっていない。</li><li class="note-item"><strong><u>固定チャンネルを作成</u></strong>した方が運用や引き次の面でも良い。</li><li class="bullet-item">新幹事2名程度の正式参加を希望。</li><li class="bullet-item">JCRセミナーでのハンズオンが今後継続されない方針のため、開催頻度は低下見込み。</li></ul>
+<h3>3. 現時点での年間予定、現在進行中のプロジェクトの進捗状況</h3>
+<ul class="minutes-list"><li class="bullet-item">来年のJSIR総会でも、学術委員会から継続希望あり。今年同様、会期中のハンズオン開催を想定。</li><li class="bullet-item">直近の開催は原先生と木野田先生が主担当。以前は広島大学の三谷先生（過去幹事）が主体。</li><li class="bullet-item">学術委員会との共催ハンズオンの進め方は引継ぎ済み。来年の総会ハンズオンを主担当できる新幹事2名程度を募集したい。木野田先生も補助予定。できれば2名のうち1名は、すぐ40歳にならない方が望ましい。</li><li class="note-item"><strong><u>杉浦先生</u></strong>（幹事会後改めて快諾していただいた）、<strong><u>小野先生</u></strong>、<strong><u>岩野</u></strong><strong><u>加入</u></strong>。</li></ul>
+<h3>4. その他</h3>
+<ul class="minutes-list"><li class="bullet-item"><strong><u>JCR</u></strong><strong><u>セミナーのハンズオン</u></strong><strong><u>は</u></strong><strong><u>今後継続されない</u></strong>方針。</li><li class="note-item">確定事項</li></ul>
+<h3>5. 他、幹事会での決定事項、新たな課題等</h3>
+<ul class="minutes-list"><li class="bullet-item">特になし。</li></ul></section><section id="2026-06-30-国際交流プロジェクト班" class="panel" data-date="2026-06-30" data-label="国際交流プロジェクト班" hidden><header class="panel-header"><div class="panel-top"><div class="panel-date">2026-06-30</div><div class="toolbar"><button class="print-toggle" type="button" aria-expanded="false">印刷 / PDF</button><div class="print-menu"><button class="print-option" type="button" data-print-scope="date">この日付の全てのページ</button><button class="print-option" type="button" data-print-scope="page">このページのみ</button><button class="print-option" type="button" data-print-scope="label">全ての日付のこの班のみ</button></div></div></div><h2><strong><br></strong><strong>国際交流プロジェクト班（佐々木優先生、関東世話人）</strong></h2></header><h3>1. 前回以降の活動報告</h3>
+<ul class="minutes-list"><li class="bullet-item">活動報告なし。</li></ul>
+<h3>2. 課題</h3>
+<ul class="minutes-list"><li class="bullet-item">英語関連イベントの参加者選定に難渋。</li></ul>
+<h3>3. 現時点での年間予定、現在進行中のプロジェクトの進捗状況</h3>
+<ul class="minutes-list"><li class="bullet-item">8/8 堀川先生英語塾。木村先生が手配してくださっている</li><li class="bullet-item">堀川先生bootcamp（?）。</li><li class="bullet-item">SIR-RFSカンファ（?）。</li><li class="bullet-item">CIRSEでは松本先生によるYoung IRs Trainee Sessionsを予定。</li></ul>
+<h3>4. その他</h3>
+<ul class="minutes-list"><li class="bullet-item">昨年は<u>月例</u><u>webinar</u><u>を</u><u>1</u><u>枠</u>実施。2026年末から2027年始頃に同様のコラボ企画を希望。</li><li class="note-item"><strong><u>３ヶ月前（</u></strong><strong><u>9</u></strong><strong><u>月頃）に</u></strong><strong><u>webin</u></strong><strong><u>ar</u></strong><strong><u>班へ声がけを</u></strong>。</li><li class="bullet-item">日常的なケースプレゼンテーション、海外学会発表の予演など企画中。</li><li class="note-item">海外学会の報告会もいいのでは？<br>•３人ほどメンバー増える見込み。</li><li class="note-item">幹事会終了後、<strong><u>高良先生も国際班に加入</u></strong>いただけると連絡あり。</li></ul>
+<h3>5. 他、幹事会での決定事項、新たな課題等</h3>
+<ul class="minutes-list"><li class="bullet-item">特になし。</li></ul></section><section id="2026-06-30-広報班" class="panel" data-date="2026-06-30" data-label="広報班" hidden><header class="panel-header"><div class="panel-top"><div class="panel-date">2026-06-30</div><div class="toolbar"><button class="print-toggle" type="button" aria-expanded="false">印刷 / PDF</button><div class="print-menu"><button class="print-option" type="button" data-print-scope="date">この日付の全てのページ</button><button class="print-option" type="button" data-print-scope="page">このページのみ</button><button class="print-option" type="button" data-print-scope="label">全ての日付のこの班のみ</button></div></div></div><h2><strong><br></strong><strong>広報班（齊藤英正先生、副代表、関東幹事）</strong></h2></header><h3>1. 前回以降の活動報告</h3>
+<ul class="minutes-list"><li class="bullet-item">Xへ投稿。</li><li class="bullet-item">キャリアアップHPを管理。別班での活動として、佐々木先生・友金先生・丸山先生が関与。年2名追加を目標にインタビュー記事を掲載する方針。</li><li class="note-item">元々<strong><u>D&amp;I WG</u></strong><strong><u>の</u></strong><strong><u>管轄</u></strong>のため、運用および決定権はWGの方にあることを明確に。</li><li class="bullet-item">学会HPの幹事メンバー表を更新。</li></ul>
+<h3>2. 課題</h3>
+<ul class="minutes-list"><li class="bullet-item">佐々木先生、小倉先生が引退。東大阪医療センターの齊藤夏彦先生が加入し、小倉先生から植山先生の推薦あり。北日本・中部・中四国からもそれぞれメンバー募集が必要。</li><li class="note-item">下記仕事内容が決定してから、仕事量で必要人数は変わると考えられる。また、仕事内容もわかってからの方が選定し易いため、<strong><u>各地域からのメンバー増員に関しては一旦保留</u></strong>。</li><li class="bullet-item">AntaaとIVR学会で提携し、広報用特設サイトを作成予定。サイト内コンテンツ作成も予定しており、3人での活動は厳しい見込み。</li><li class="note-item">現状IVR学会内部で契約書を作成中のよう。Antaa会員であれば研修医や学生も見られる。具体的には決まっていない。</li><li class="bullet-item">Xの運用はwebinar告知が中心。<strong><u>Webinar</u></strong><strong><u>以外の投稿ネタも募集</u></strong>したい。J CIRCLEメンバー勧誘にも活用可能。</li></ul>
+<h3>3. 現時点での年間予定、現在進行中のプロジェクトの進捗状況</h3>
+<ul class="minutes-list"><li class="bullet-item">特になし。</li><li class="bullet-item">今後、AntaaとIVR学会で提携し、広報用特設サイトを作成予定。</li></ul>
+<h3>4. その他</h3>
+<ul class="minutes-list"><li class="bullet-item">記載なし。</li></ul>
+<h3>5. 他、幹事会での決定事項、新たな課題等</h3>
+<ul class="minutes-list"><li class="bullet-item">特になし。</li></ul></section><section id="2026-06-30-その他" class="panel" data-date="2026-06-30" data-label="その他" hidden><header class="panel-header"><div class="panel-top"><div class="panel-date">2026-06-30</div><div class="toolbar"><button class="print-toggle" type="button" aria-expanded="false">印刷 / PDF</button><div class="print-menu"><button class="print-option" type="button" data-print-scope="date">この日付の全てのページ</button><button class="print-option" type="button" data-print-scope="page">このページのみ</button><button class="print-option" type="button" data-print-scope="label">全ての日付のこの班のみ</button></div></div></div><h2><strong>その他議題</strong></h2></header><p>・JSIR2027シンポジウム（直近ではないが、そろそろメンバーとテーマ募集。枠は90分？）</p>
+<ul class="minutes-list"><li class="note-item">岩野より近日中に過去のシンポジウム内容について資料共有します。</li></ul>
+<p>・オンライン相談プロジェクト</p>
+<ul class="minutes-list"><li class="note-item">現在活用できていないが、 研究を相談する場等にも活用できる可能性あり。</li></ul>
+<p>・<strong><u>G</u></strong><strong><u>oogle</u></strong><strong><u>アカウント</u></strong><strong><u>権限</u></strong>委譲について</p>
+<ul class="minutes-list"><li class="note-item">現状、最も使用頻度が高いのはwebinar班のため、<strong><u>中山先生に移行</u></strong>が妥当。</li></ul>
+<p>・J-CIRCLEに関わる業務</p>
+<ul class="minutes-list"><li class="note-item">個人的に引き継ぎなどを依頼された場合でも、slackの幹事スレッドで共有し、何らかの班の仕事として運営していくこととする。</li></ul></section>
+    </main>
+  </div>
+  <script>
+    const links = Array.from(document.querySelectorAll('.nav-link'));
+    const panels = Array.from(document.querySelectorAll('.panel'));
+    const defaultTarget = document.querySelector('.content')?.dataset.defaultTarget || '';
+    const dateGroups = Array.from(document.querySelectorAll('[data-date-group]'));
+    const dateToggles = Array.from(document.querySelectorAll('[data-date-toggle]'));
+    const printOptions = Array.from(document.querySelectorAll('[data-print-scope]'));
+
+    function activate(target) {
+      links.forEach((link) => {
+        link.classList.toggle('is-active', link.dataset.target === target);
+      });
+      panels.forEach((panel) => {
+        panel.classList.toggle('is-active', panel.id === target);
+        panel.hidden = panel.id !== target;
+      });
+      history.replaceState(null, '', '#' + encodeURIComponent(target));
+    }
+
+    links.forEach((link) => {
+      link.addEventListener('click', () => activate(link.dataset.target));
+    });
+
+    dateToggles.forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const group = toggle.closest('[data-date-group]');
+        group?.classList.toggle('is-collapsed');
+        toggle.setAttribute('aria-expanded', String(!group?.classList.contains('is-collapsed')));
+      });
+    });
+
+    if (dateGroups.length > 1) {
+      dateGroups.forEach((group, index) => {
+        group.classList.toggle('is-collapsed', index !== dateGroups.length - 1);
+        const toggle = group.querySelector('[data-date-toggle]');
+        toggle?.setAttribute('aria-expanded', String(index === dateGroups.length - 1));
+      });
+    }
+
+    function currentPanel() {
+      return panels.find((panel) => panel.classList.contains('is-active'));
+    }
+
+    function closePrintMenus() {
+      document.querySelectorAll('.print-menu.is-open').forEach((menu) => {
+        menu.classList.remove('is-open');
+      });
+      document.querySelectorAll('.print-toggle[aria-expanded="true"]').forEach((toggle) => {
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    function clearPrintTargets() {
+      document.body.classList.remove('print-page', 'print-date', 'print-label');
+      panels.forEach((panel) => panel.classList.remove('print-target'));
+    }
+
+    function markPrintTargets(scope) {
+      clearPrintTargets();
+      const active = currentPanel();
+      if (!active) return false;
+      if (scope === 'page') {
+        active.classList.add('print-target');
+        document.body.classList.add('print-page');
+        return true;
+      }
+      if (scope === 'date') {
+        const date = active.dataset.date;
+        panels.forEach((panel) => {
+          if (panel.dataset.date === date) panel.classList.add('print-target');
+        });
+        document.body.classList.add('print-date');
+        return true;
+      }
+      if (scope === 'label') {
+        const label = active.dataset.label;
+        panels.forEach((panel) => {
+          if (panel.dataset.label === label) panel.classList.add('print-target');
+        });
+        document.body.classList.add('print-label');
+        return true;
+      }
+      return false;
+    }
+
+    document.querySelectorAll('.print-toggle').forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const menu = toggle.nextElementSibling;
+        const willOpen = !(menu instanceof HTMLElement && menu.classList.contains('is-open'));
+        closePrintMenus();
+        if (menu instanceof HTMLElement && willOpen) {
+          menu.classList.add('is-open');
+          toggle.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    printOptions.forEach((option) => {
+      option.addEventListener('click', () => {
+        const scope = option.dataset.printScope;
+        closePrintMenus();
+        if (!scope || !markPrintTargets(scope)) return;
+        window.print();
+      });
+    });
+
+    window.addEventListener('afterprint', clearPrintTargets);
+    document.addEventListener('click', (event) => {
+      if (!(event.target instanceof Node)) return;
+      if (event.target.closest('.toolbar')) return;
+      closePrintMenus();
+    });
+
+    const initialHash = decodeURIComponent(location.hash.replace(/^#/, ''));
+    activate(initialHash || defaultTarget);
+  </script>
+</body>
+</html>
